@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import BASE_URL from "../config";
+import BASE_URL from '../config';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -14,9 +14,6 @@ import {
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://awtowbotz.vercel.app'
-  : 'http://localhost:5000';
 
 function RegionChart() {
   const [chartData, setChartData] = useState(null);
