@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BASE_URL from '../config';
+
 function SummaryCards() {
   const [summary, setSummary] = useState(null);
 
   useEffect(() => {
+    console.log("📡 REACT_APP_API_BASE_URL in use:", BASE_URL);
+
     axios.get(`${BASE_URL}/api/sales_summary`)
-      .then(res => setSummary(res.data))
-      .catch(err => console.error('Error fetching sales summary:', err));
+      .then(res => {
+        console.log("✅ Sales summary response:", res.data);
+        setSummary(res.data);
+      })
+      .catch(err => {
+        console.error('❌ Error fetching sales summary:', err.message || err);
+      });
   }, []);
 
   if (!summary) return <p>Loading summary...</p>;
