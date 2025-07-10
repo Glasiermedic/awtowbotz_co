@@ -1,60 +1,94 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 
-function TopRepsList() {
-  const [reps, setReps] = useState([]);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://awtowbotz.vercel.app'
+  : 'http://localhost:5000';
+
+function RegionChart() {
+  const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/top_reps')
-      .then(res => setReps(res.data))
-      .catch(err => console.error('Error fetching top reps:', err));
+    axios.get(`${API_BASE_URL}/api/sales_by_region`)
+      .then(res => {
+        const labels = res.data.map(item => item.region);
+        const data = res.data.map(item => item.total_sales);
+        setChartData({
+          labels,
+          datasets: [{
+            label: 'Sales by Region',
+            data,
+            backgroundColor: '#3b82f6',
+            borderRadius: 6,
+            barThickness: 40
+          }]
+        });
+      })
+      .catch(err => console.error('Error fetching region data:', err));
   }, []);
+
+  if (!chartData) return <p>Loading chart...</p>;
 
   return (
     <div style={containerStyle}>
-      <h3 style={headerStyle}>Top Sales Reps</h3>
-      <ul style={{ paddingLeft: 0, listStyleType: 'none', width: '100%' }}>
-        {reps.map((rep, index) => (
-          <li key={index} style={itemStyle}>
-            <span style={{ fontWeight: '600', fontSize: '1rem' }}>{rep.sales_rep}</span>
-            <span style={{ float: 'right', fontSize: '1rem', color: '#2563eb' }}>${rep.total_sales.toLocaleString()}</span>
-          </li>
-        ))}
-      </ul>
+      <h3 style={headerStyle}>Sales by Region</h3>
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 }
 
 const containerStyle = {
   backgroundColor: '#fff',
-  padding: '1.5rem',
+  padding: '2rem',
   borderRadius: '0.5rem',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
   marginBottom: '2rem',
-  maxWidth: '600px',
+  maxWidth: '800px',
   marginLeft: 'auto',
   marginRight: 'auto'
 };
 
 const headerStyle = {
   fontSize: '1.5rem',
-  borderBottom: '2px solid #e2e8f0',
-  paddingBottom: '0.5rem',
+  fontWeight: '700',
   marginBottom: '1rem',
-  textAlign: 'center',
-  fontWeight: '700'
+  textAlign: 'center'
 };
 
-const itemStyle = {
-  marginBottom: '0.75rem',
-  padding: '0.75rem 1rem',
-  backgroundColor: '#f9fafb',
-  borderRadius: '0.4rem',
-  border: '1px solid #e5e7eb',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  transition: 'background 0.2s ease-in-out',
+const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: { display: false },
+    title: { display: false },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          return `$${context.raw.toLocaleString()}`;
+        }
+      }
+    }
+  },
+  scales: {
+    y: {
+      ticks: {
+        callback: function (value) {
+          return `$${value.toLocaleString()}`;
+        }
+      }
+    }
+  }
 };
 
-export default TopRepsList;
+export default RegionChart;
