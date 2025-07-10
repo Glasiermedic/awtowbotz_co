@@ -3,7 +3,14 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from google.cloud import bigquery
 from dotenv import load_dotenv
+import base64
 
+# Decode and write the credentials file if in Render
+if os.getenv("GOOGLE_CREDENTIALS_B64"):
+    credentials_path = "/tmp/service-account.json"
+    with open(credentials_path, "wb") as f:
+        f.write(base64.b64decode(os.environ["GOOGLE_CREDENTIALS_B64"]))
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 # Load environment variables
 load_dotenv()
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
