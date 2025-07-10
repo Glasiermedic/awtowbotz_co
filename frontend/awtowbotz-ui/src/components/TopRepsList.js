@@ -1,94 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js';
+import BASE_URL from './config';
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
-
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://awtowbotz.vercel.app'
-  : 'http://localhost:5000';
-
-function RegionChart() {
-  const [chartData, setChartData] = useState(null);
+function TopResults() {
+  const [results, setResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/sales_by_region`)
-      .then(res => {
-        const labels = res.data.map(item => item.region);
-        const data = res.data.map(item => item.total_sales);
-        setChartData({
-          labels,
-          datasets: [{
-            label: 'Sales by Region',
-            data,
-            backgroundColor: '#3b82f6',
-            borderRadius: 6,
-            barThickness: 40
-          }]
-        });
-      })
-      .catch(err => console.error('Error fetching region data:', err));
+    async function fetchResults() {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await axios.get(`${BASE_URL}/api/current_data_live?station_id=top`);
+        setResults(response.data?.results || []);
+      } catch (err) {
+        console.error('Error fetching top results:', err);
+        setError('Failed to fetch top results.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchResults();
   }, []);
 
-  if (!chartData) return <p>Loading chart...</p>;
-
   return (
-    <div style={containerStyle}>
-      <h3 style={headerStyle}>Sales by Region</h3>
-      <Bar data={chartData} options={chartOptions} />
+    <div className="top-results">
+      <h3>Top Results</h3>
+
+      {isLoading && <p>Loading...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {!isLoading && results.length === 0 && <p>No data available.</p>}
+
+      <ul>
+        {results.map((item, index) => (
+          <li key={index}>
+            <strong>{item.label}:</strong> {item.value}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-const containerStyle = {
-  backgroundColor: '#fff',
-  padding: '2rem',
-  borderRadius: '0.5rem',
-  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-  marginBottom: '2rem',
-  maxWidth: '800px',
-  marginLeft: 'auto',
-  marginRight: 'auto'
-};
-
-const headerStyle = {
-  fontSize: '1.5rem',
-  fontWeight: '700',
-  marginBottom: '1rem',
-  textAlign: 'center'
-};
-
-const chartOptions = {
-  responsive: true,
-  plugins: {
-    legend: { display: false },
-    title: { display: false },
-    tooltip: {
-      callbacks: {
-        label: function (context) {
-          return `$${context.raw.toLocaleString()}`;
-        }
-      }
-    }
-  },
-  scales: {
-    y: {
-      ticks: {
-        callback: function (value) {
-          return `$${value.toLocaleString()}`;
-        }
-      }
-    }
-  }
-};
-
-export default RegionChart;
+export default TopResults;

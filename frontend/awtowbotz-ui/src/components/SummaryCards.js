@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import BASE_URL from './config';
 function SummaryCards() {
   const [summary, setSummary] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/sales_summary')
+    axios.get(`${BASE_URL}/api/sales_summary`)
       .then(res => setSummary(res.data))
       .catch(err => console.error('Error fetching sales summary:', err));
   }, []);

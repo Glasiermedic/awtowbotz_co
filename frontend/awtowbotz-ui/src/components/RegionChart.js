@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import BASE_URL from "../config";
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -21,7 +22,7 @@ function RegionChart() {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/sales_by_region`)
+    axios.get(`${BASE_URL}/api/sales_by_region`)
       .then(res => {
         const labels = res.data.map(item => item.region);
         const data = res.data.map(item => item.total_sales);
