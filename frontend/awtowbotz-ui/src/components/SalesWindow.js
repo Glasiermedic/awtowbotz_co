@@ -18,16 +18,26 @@ function SalesWindow() {
       <div style={sectionStyle}>
         <h3 style={headerStyle}>📅 Today</h3>
         <p style={valueStyle}>
-          Revenue: ${data.today.total_revenue != null ? data.today.total_revenue.toLocaleString() : '0'}
+          Revenue: ${data.today?.total_revenue != null ? data.today.total_revenue.toLocaleString() : '0'}
         </p>
-        <p style={valueStyle}>Avg Unit Price: ${data.today.avg_unit_price.toFixed(2)}</p>
-        <p style={valueStyle}>Transactions: {data.today.transactions}</p>
+        <p style={valueStyle}>
+          Avg Unit Price: ${data.today?.avg_unit_price != null ? data.today.avg_unit_price.toFixed(2) : '0.00'}
+        </p>
+        <p style={valueStyle}>
+          Transactions: {data.today?.transactions ?? '0'}
+        </p>
       </div>
       <div style={sectionStyle}>
         <h3 style={headerStyle}>📆 This Month</h3>
-        <p style={valueStyle}>Revenue: ${data.month.total_revenue.toLocaleString()}</p>
-        <p style={valueStyle}>Avg Unit Price: ${data.month.avg_unit_price.toFixed(2)}</p>
-        <p style={valueStyle}>Transactions: {data.month.transactions}</p>
+        <p style={valueStyle}>
+          Revenue: ${data.month?.total_revenue != null ? data.month.total_revenue.toLocaleString() : '0'}
+        </p>
+        <p style={valueStyle}>
+          Avg Unit Price: ${data.month?.avg_unit_price != null ? data.month.avg_unit_price.toFixed(2) : '0.00'}
+        </p>
+        <p style={valueStyle}>
+          Transactions: {data.month?.transactions ?? '0'}
+        </p>
       </div>
     </div>
   );
