@@ -62,7 +62,7 @@ def top_reps():
         SELECT
             sales_rep,
             COUNT(*) AS num_sales,
-            SUM(unit_sold) AS total_units,
+            SUM(units_sold) AS total_units,
             ROUND(SUM(total_sale), 2) AS total_sales
         FROM `{FULL_TABLE}`
         WHERE DATE(sale_date) >= '{start_of_year}'
