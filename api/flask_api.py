@@ -56,15 +56,31 @@ def sales_by_region():
 
 @app.route("/api/top_reps")
 def top_reps():
+    start_of_year = datetime.utcnow().replace(month=1, day=1).date()
+
     query = f"""
-        SELECT sales_rep, ROUND(SUM(total_sale), 2) AS total_sales
+        SELECT
+            sales_rep,
+            COUNT(*) AS num_sales,
+            SUM(quantity) AS total_units,
+            ROUND(SUM(total_sale), 2) AS total_sales
         FROM `{FULL_TABLE}`
+        WHERE DATE(sale_date) >= '{start_of_year}'
         GROUP BY sales_rep
         ORDER BY total_sales DESC
         LIMIT 5
     """
+
     result = client.query(query).result()
-    data = [{"sales_rep": row["sales_rep"], "total_sales": row["total_sales"]} for row in result]
+    data = [
+        {
+            "sales_rep": row["sales_rep"],
+            "num_sales": row["num_sales"],
+            "total_units": row["total_units"],
+            "total_sales": row["total_sales"]
+        }
+        for row in result
+    ]
     return jsonify(data)
 
 @app.route("/api/sales_window_summary")
