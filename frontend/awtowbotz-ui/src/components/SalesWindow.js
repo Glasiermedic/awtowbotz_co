@@ -17,7 +17,9 @@ function SalesWindow() {
     <div style={containerStyle}>
       <div style={sectionStyle}>
         <h3 style={headerStyle}>📅 Today</h3>
-        <p style={valueStyle}>Revenue: ${data.today.total_revenue.toLocaleString()}</p>
+        <p style={valueStyle}>
+          Revenue: ${data.today.total_revenue != null ? data.today.total_revenue.toLocaleString() : '0'}
+        </p>
         <p style={valueStyle}>Avg Unit Price: ${data.today.avg_unit_price.toFixed(2)}</p>
         <p style={valueStyle}>Transactions: {data.today.transactions}</p>
       </div>
